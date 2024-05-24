@@ -55,6 +55,8 @@
     "@loopback/rest": "^14.0.1",
     "@loopback/rest-explorer": "^7.0.1",
     "@loopback/service-proxy": "^7.0.1",
+    "crypto-js": "^4.2.0",
+    "generate-password": "^1.7.1",
     "loopback-connector-mongodb": "^6.2.0",
     "tslib": "^2.0.0"
   },
