@@ -19,17 +19,16 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {Credenciales, Login, Usuario} from '../models';
+import {Credenciales, FactorDeAutentificacionPorCodigo, Login, Usuario} from '../models';
 import {LoginRepository, UsuarioRepository} from '../repositories';
 import {SeguridadUsuarioService} from '../services';
-import {promises} from 'dns';
 
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
     public usuarioRepository: UsuarioRepository,
     @service(SeguridadUsuarioService)
-    public servicioSeguridad: SeguridadUsuarioService
+    public servicioSeguridad: SeguridadUsuarioService,
     @repository(LoginRepository)
     public respositorioLogin: LoginRepository
   ) {}
@@ -170,7 +169,7 @@ export class UsuarioController {
   @post('/identificar-usuario')
   @response(200, {
     description:"Identificar un usuario por correo y clave",
-    content:{'application/json':{schema: getModelSchemaRef(Credenciales)}}
+    content:{'application/json':{schema: getModelSchemaRef(Usuario)}}
   })
   async identificarUsuario(
     @requestBody(
@@ -197,6 +196,40 @@ export class UsuarioController {
       // notificar al usuario por correo o msm
       return usuario;
     }
-    return new HttpErrors[401]{"Credenciales incorrectas."};
+    return new HttpErrors[401]("Credenciales incorrectas.");
   }
+  @post('/verificar-2fa')
+  @response(200, {
+    description:"validar un codigo de 2fa",
+  })
+  async VerificarCodigo2fa(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema:getModelSchemaRef(FactorDeAutentificacionPorCodigo)
+          }
+        }
+      }
+    )
+    Credenciales: FactorDeAutentificacionPorCodigo
+  ): Promise<object> {
+    let usuario = await this.servicioSeguridad.validarCodigo2fa(Credenciales);
+    if(usuario){
+      let token = this.servicioSeguridad.crearToken(usuario);
+      if (Usuario) {
+        usuario.clave = "";
+          return {
+            user:usuario,
+            token:token
+        };
+      }
+    }
+    return new HttpErrors[401]("codigo de 2fa invalido para el usuario definido.");
+  }
+
+  crearToken(usuario: Usuario) {
+
+  }
+
 }
