@@ -1,4 +1,5 @@
 import {service} from '@loopback/core';
+import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -73,6 +74,7 @@ export class UsuarioController {
     return this.usuarioRepository.count(where);
   }
 
+  @authenticate('auth')
   @get('/usuario')
   @response(200, {
     description: 'Array of Usuario model instances',
@@ -227,7 +229,7 @@ export class UsuarioController {
           this.usuarioRepository.logins(usuario._id).patch(
             {
               estadoCodigo2fa: true,
-              token: token 
+              token: token
             },
             {
               estadoCodigo2fa: false
