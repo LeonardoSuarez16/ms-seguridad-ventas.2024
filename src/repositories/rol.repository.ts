@@ -1,9 +1,9 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyThroughRepositoryFactory, HasManyRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {DefaultCrudRepository, HasManyRepositoryFactory, HasManyThroughRepositoryFactory, repository} from '@loopback/repository';
 import {DatasourceDataSource} from '../datasources';
-import {Rol, RolRelations, Menu, RolMenu, Usuario} from '../models';
-import {RolMenuRepository} from './rol-menu.repository';
+import {Menu, Rol, RolMenu, RolRelations, Usuario} from '../models';
 import {MenuRepository} from './menu.repository';
+import {RolMenuRepository} from './rol-menu.repository';
 import {UsuarioRepository} from './usuario.repository';
 
 export class RolRepository extends DefaultCrudRepository<

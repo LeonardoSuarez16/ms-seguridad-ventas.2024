@@ -187,12 +187,14 @@ export class UsuarioController {
     if (usuario) {
       let codigo2fa = this.servicioSeguridad.crearTextoAleatorio(5);
       let login: Login = new Login();
+      console.log(codigo2fa);
       login.usuarioId = usuario._id!;
       login.codigo2fa = codigo2fa;
       login.estadoCodigo2fa = false;
       login.token = "";
       login.estadoToken = false;
       this.respositorioLogin.create(login);
+      usuario.clave = "";
       // notificar al usuario por correo o msm
       return usuario;
     }
@@ -219,6 +221,20 @@ export class UsuarioController {
       let token = this.servicioSeguridad.crearToken(usuario);
       if (Usuario) {
         usuario.clave = "";
+        try {
+          // con estas lineas lo que hacemos es llamar por la relacion de usuario y login
+          // el iderntificado y le hacemos un patch de estafo false a true
+          this.usuarioRepository.logins(usuario._id).patch(
+            {
+              estadoCodigo2fa: true,
+              token: token 
+            },
+            {
+              estadoCodigo2fa: false
+            });
+        } catch {
+          console.log("no se a almacenado el cambio del estado de token en la base de datos en usuario.controler")
+        }
           return {
             user:usuario,
             token:token
