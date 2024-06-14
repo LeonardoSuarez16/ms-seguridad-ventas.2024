@@ -1,9 +1,8 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
-import {Credenciales, FactorDeAutentificacionPorCodigo, Login, Usuario} from '../models';
 import {repository} from '@loopback/repository';
-import {LoginRepository, UsuarioRepository} from '../repositories';
-import {promises} from 'dns';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
+import {Credenciales, FactorDeAutentificacionPorCodigo, Usuario} from '../models';
+import {LoginRepository, UsuarioRepository} from '../repositories';
 const generator = require('generate-password');
 const MD5 = require("crypto-js/md5");
 const jwt = require('jsonwebtoken');
@@ -95,5 +94,14 @@ export class SeguridadUsuarioService {
     };
     let token = jwt.sign(datos, ConfiguracionSeguridad.claveJWT);
     return token;
+  }
+  /**
+   * valida y optiene el rol de un token
+   * @param tk el token
+   * @returns el _id del rol
+   */
+  obtenerRolDesdeToken(tk:string): string{
+    let obj = jwt.verify(tk, ConfiguracionSeguridad.claveJWT);
+    return obj.role;
   }
 }
